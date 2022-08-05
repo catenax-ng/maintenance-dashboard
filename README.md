@@ -1,42 +1,44 @@
-# maintenance-dashboard
-DevSecOps team maintenance dashboard
+# Maintenance "dashboard"
 
-notes:
+  - version 1.0
 
-wget https://go.dev/dl/go1.18.4.linux-amd64.tar.gz
+# maintenance-dashboard-app.py
 
-rm -rf /usr/local/go
+TODO:
 
-tar -C /usr/local -xzf go1.18.4.linux-amd64.tar.gz
+  - annotate newreleases.io api key from [Vault](https://vault.demo.catena-x.net/ui/vault/secrets/devsecops/show/acme/machine-user) in the pod as environment variable "NR_API_KEY"
 
-export PATH=$PATH:/usr/local/go/bin
+## config.json
 
-go env -w GO111MODULE="on" #or "auto"
+Mapping between github helm charts/kustomizations/deployments and newreleases.io project in json format
 
-go mod init maintenance-dashboard
+```json
+{
+  "<github repo>":"<owner/repo>"
+  "<newreleases.io api url>":"<value>"
+  "<charts>":[
+    {
+      "<app>":"<app name>"
+      "<path>":"<path in github repo>"
+      "<deplendency>":"<index of dependencies array(starts at 0)>"
+      "<project>":"<newreleases.io project name>"
+      "<prefix>":"<prefix of version in newreleases.io>"
+    }
+  ]
+  "<kustomizes>":[{"<same structure>": "<as charts>"}]
+  "<deployments>":[{"<same structure>": "<as charts>"}]
+}
+```
 
-go mod tidy
+## Docker
 
-go get github.com/prometheus/client_golang/prometheus
+```bash
+# Build
+docker build -t ghcr.io/catenax-ng/maintenance-dashboard/maintenance-dashboard-app .
 
-go get github.com/prometheus/client_golang/prometheus/promauto
+# Push
+docker push ghcr.io/catenax-ng/maintenance-dashboard/maintenance-dashboard-app
 
-go get github.com/prometheus/client_golang/prometheus/promhttp
-
-go get k8s.io/client-go@latest
-
-go build maintenance-dashboard.go
-
-##############################################################
-
-# newreleases.io api calls
-
-NR_PROJECTS=$(curl -H "X-Key: $NR_API_KEY" https://api.newreleases.io/v1/projects | jq -r '.projects[].id')
-
-for id in $NR_PROJECTS
-
-  do
-
-    curl -H "X-Key: $NR_API_KEY" https://api.newreleases.io/v1/projects/$id/releases | jq -r '.releases[0].version'
-
-  done
+# Run
+docker run -u 1000:1000 -p 8000:8000 -d -e NR_API_KEY=$NR_API_KEY mghcr.io/catenax-ng/maintenance-dashboard/aintenance-dashboard-app
+```
