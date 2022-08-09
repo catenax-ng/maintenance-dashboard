@@ -80,3 +80,9 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+avp:
+  helm:
+    secrets:
+      - name: NR_API_KEY
+        value: <path:devsecops/acme/machine-user/newreleases-api-key>
