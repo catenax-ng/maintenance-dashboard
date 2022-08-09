@@ -26,9 +26,7 @@ serviceAccount:
 podAnnotations: {}
 
 podSecurityContext: {}
-  runAsUser: 1000
-  runAsGroup: 1000
-  fsGroup: 2000
+  # fsGroup: 2000
 
 securityContext: {}
   # capabilities:
