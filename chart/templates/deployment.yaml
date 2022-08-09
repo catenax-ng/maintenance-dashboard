@@ -34,7 +34,7 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           envFrom:
           - secretRef:
-              name: maintenance-dashboard-app-nr-api-key
+              name: nr-api-key
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
