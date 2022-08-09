@@ -32,8 +32,9 @@ spec:
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          env:
-            {{- toYaml .Values.avp.helm.secrets | nindent 12 }}
+          envFrom:
+          - secretRef:
+              name: maintenance_dashboard_app_nr_api_key
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
