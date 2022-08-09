@@ -83,4 +83,4 @@ affinity: {}
 
 avp:
   helm:
-    nr_api_key: <path:devsecops/data/acme/machine-user/newreleases-api-key>
+    nr_api_key: <path:devsecops/acme/machine-user/data/newreleases-api-key>
