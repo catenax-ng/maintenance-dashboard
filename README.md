@@ -1,12 +1,22 @@
-# Maintenance "dashboard"
+# Maintenance dashboard app
 
   - version 1.0
-
-# maintenance-dashboard-app.py
 
 TODO:
 
   - create actions pipeline for building the image?
+
+## maintenance-dashboard-app.py
+
+The script that is checking the deployed versions in config.json agains the latest in newreleases.io
+
+## Dockerfile
+
+Build a docker image from maintenance-dashboard-app.py
+
+## chart/**
+
+A Helm chart to deploy the app (e.g. in k8s-cluster-stack as an argo app or app set)
 
 ## config.json
 
