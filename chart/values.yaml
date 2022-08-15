@@ -51,7 +51,7 @@ ingress:
     - host: maintenance-dashboard-app.devsecops-testing.demo.catena-x.net
       paths:
         - path: /
-          pathType: Path
+          pathType: Prefix
   tls:
   - hosts:
     - maintenance-dashboard-app.devsecops-testing.demo.catena-x.net
