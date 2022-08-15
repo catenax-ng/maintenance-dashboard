@@ -6,7 +6,7 @@
 
 TODO:
 
-  - annotate newreleases.io api key from [Vault](https://vault.demo.catena-x.net/ui/vault/secrets/devsecops/show/acme/machine-user) in the pod as environment variable "NR_API_KEY"
+  - create actions pipeline for building the image?
 
 ## config.json
 
