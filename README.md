@@ -29,8 +29,7 @@ Mapping between github helm charts/kustomizations/deployments and newreleases.io
   "<charts>":[
     {
       "<app>":"<app name>"
-      "<path>":"<path in github repo>"
-      "<deplendency>":"<index of dependencies array(starts at 0)>"
+      "<deployed>":"<current deployed version of the app>"
       "<project>":"<newreleases.io project name>"
       "<prefix>":"<prefix of version in newreleases.io>"
     }
