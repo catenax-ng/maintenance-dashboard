@@ -16,4 +16,4 @@ RUN apk add python3-dev build-base linux-headers pcre-dev
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
-CMD [ "uwsgi","--http",":8000","--wsgi-file","maintenance-dashboard-app.py","--callable","app" ]
+CMD [ "uwsgi","--http-socket",":5000","--wsgi-file","maintenance-dashboard-app.py","--callable","app" ]
