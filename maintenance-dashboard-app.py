@@ -68,4 +68,3 @@ if __name__ == '__main__':
     scheduler = BackgroundScheduler()
     scheduler.add_job(query_and_register_collectors, 'interval', seconds=15)
     scheduler.start()
-    app.run()
