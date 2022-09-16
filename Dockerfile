@@ -16,4 +16,4 @@ RUN apk add --update python3-dev build-base linux-headers pcre-dev uwsgi-python
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
-CMD [ "uwsgi","--plugins-dir","/usr/lib/uwsgi/","--need-plugin","python","--http-socket",":5000","--wsgi-file","maintenance-dashboard-app.py","--callable","app" ]
+CMD [ "uwsgi","--plugin","/usr/lib/uwsgi/python_plugin.so","--http-socket",":5000","--wsgi-file","maintenance-dashboard-app.py","--callable","app" ]
