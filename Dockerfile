@@ -10,7 +10,6 @@ WORKDIR /usr/app/src
 COPY maintenance-dashboard-app.py ./
 COPY config.json ./
 COPY requirements.txt ./
-COPY crontab ./
 
 RUN apk add python3-dev build-base linux-headers pcre-dev
 
