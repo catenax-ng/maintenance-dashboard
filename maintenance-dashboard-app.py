@@ -44,7 +44,6 @@ def query_and_register_collectors():
       latest = kps_releases[0]
     latestversion = latest.get('version').replace(prefix,'') or latest.get('version')
     results.append({'name': name, 'deployed': deployed, 'latest': latestversion})
-
   class VersionsCollector(object):
     def __init__(self):
       pass
@@ -53,18 +52,18 @@ def query_and_register_collectors():
       for r in results:
         gauge.add_metric([r['name'],r['deployed'],r['latest']], 1.0)
       yield gauge
-
   collectors = list(REGISTRY._collector_to_names.keys())
   for collector in collectors:
     REGISTRY.unregister(collector)
   REGISTRY.register(VersionsCollector())
   return collectors
 
+query_and_register_collectors()
+
 app.wsgi_app = DispatcherMiddleware(app.wsgi_app, {
     '/metrics': make_wsgi_app()
 })
 
-if __name__ == '__main__':
-    scheduler = BackgroundScheduler()
-    scheduler.add_job(query_and_register_collectors, 'interval', seconds=15)
-    scheduler.start()
+scheduler = BackgroundScheduler()
+scheduler.add_job(query_and_register_collectors, 'interval', hours=1)
+scheduler.start()
