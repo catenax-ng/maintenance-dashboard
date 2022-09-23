@@ -13,9 +13,11 @@ COPY config.json ./
 COPY requirements.txt ./
 
 RUN apk add --update --no-cache python3 uwsgi uwsgi-python3 tzdata && ln -sf python3 /usr/bin/python
-RUN ln -fs /usr/share/zoneinfo/Etc/CET /etc/localtime
+RUN ln -fs /usr/share/zoneinfo/CET /etc/localtime
 RUN python3 -m ensurepip
 RUN pip3 install --no-cache --upgrade pip setuptools
-RUN pip3 install --no-cache --upgrade Flask prometheus-client pyjson requests APScheduler
+RUN pip3 install --no-cache --upgrade -r requirements.txt
 
-CMD [ "uwsgi","--enable-threads","--http-socket",":5000","--plugin","/usr/lib/uwsgi/python_plugin.so","--plugins-list","--wsgi-file","maintenance-dashboard-app.py","--callable","app" ]
+USER 1000:1000
+
+CMD [ "uwsgi","--enable-threads","--http-socket",":5000","--plugin","/usr/lib/uwsgi/python_plugin.so","--plugins-list","--wsgi-file","maintenance-dashboard-app.py","--callable","app","--master" ]
