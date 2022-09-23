@@ -8,7 +8,7 @@ image:
   repository: ghcr.io/catenax-ng/maintenance-dashboard/maintenance-dashboard-app
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "1.0.0"
+  tag: "1.1.4"
 
 imagePullSecrets: []
 nameOverride: ""
@@ -42,7 +42,7 @@ service:
   port: 80
 
 ingress:
-  enabled: true
+  enabled: false
   #className: "nginx"
   annotations:
     kubernetes.io/ingress.class: nginx
