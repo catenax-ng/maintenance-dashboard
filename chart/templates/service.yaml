@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "maintenance-dasboard-app.fullname" . }}
+  name: {{ include "maintenance-dashboard-app.fullname" . }}
   labels:
-    {{- include "maintenance-dasboard-app.labels" . | nindent 4 }}
+    {{- include "maintenance-dashboard-app.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.service.type }}
   ports:
@@ -12,4 +12,4 @@ spec:
       protocol: TCP
       name: http
   selector:
-    {{- include "maintenance-dasboard-app.selectorLabels" . | nindent 4 }}
+    {{- include "maintenance-dashboard-app.selectorLabels" . | nindent 4 }}

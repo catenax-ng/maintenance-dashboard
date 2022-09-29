@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: "{{ include "maintenance-dasboard-app.fullname" . }}-test-connection"
+  name: "{{ include "maintenance-dashboard-app.fullname" . }}-test-connection"
   labels:
-    {{- include "maintenance-dasboard-app.labels" . | nindent 4 }}
+    {{- include "maintenance-dashboard-app.labels" . | nindent 4 }}
   annotations:
     "helm.sh/hook": test
 spec:
@@ -11,5 +11,5 @@ spec:
     - name: wget
       image: busybox
       command: ['wget']
-      args: ['{{ include "maintenance-dasboard-app.fullname" . }}:{{ .Values.service.port }}']
+      args: ['{{ include "maintenance-dashboard-app.fullname" . }}:{{ .Values.service.port }}']
   restartPolicy: Never

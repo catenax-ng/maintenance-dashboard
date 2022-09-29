@@ -2,14 +2,14 @@
 apiVersion: autoscaling/v2beta1
 kind: HorizontalPodAutoscaler
 metadata:
-  name: {{ include "maintenance-dasboard-app.fullname" . }}
+  name: {{ include "maintenance-dashboard-app.fullname" . }}
   labels:
-    {{- include "maintenance-dasboard-app.labels" . | nindent 4 }}
+    {{- include "maintenance-dashboard-app.labels" . | nindent 4 }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: {{ include "maintenance-dasboard-app.fullname" . }}
+    name: {{ include "maintenance-dashboard-app.fullname" . }}
   minReplicas: {{ .Values.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.autoscaling.maxReplicas }}
   metrics:
