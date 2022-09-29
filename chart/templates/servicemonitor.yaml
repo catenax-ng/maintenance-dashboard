@@ -3,6 +3,8 @@ kind: ServiceMonitor
 metadata:
   name: maintenance-dashboard-source
   namespace: monitoring
+  labels:
+    release: kube-prometheus-stack
 spec:
   endpoints:
   - path: /metrics
