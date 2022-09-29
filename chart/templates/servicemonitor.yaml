@@ -6,9 +6,9 @@ metadata:
   labels:
     app.kubernetes.io/instance: maintenance-dashboard-app
     app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: maintenance-dasboard-app
+    app.kubernetes.io/name: maintenance-dashboard-app
     app.kubernetes.io/version: 1.1.5
-    helm.sh/chart: maintenance-dasboard-app-0.1.9 
+    helm.sh/chart: maintenance-dashboard-app-0.1.9 
 spec:
   endpoints:
   - path: /metrics
@@ -20,4 +20,4 @@ spec:
     - maintenance-dashboard-app
   selector:
     matchLabels:
-      app.kubernetes.io/name: maintenance-dasboard-app
+      app.kubernetes.io/name: maintenance-dashboard-app
