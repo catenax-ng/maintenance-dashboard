@@ -3,21 +3,15 @@ kind: ServiceMonitor
 metadata:
   name: maintenance-dashboard-source
   namespace: monitoring
-  labels:
-    app.kubernetes.io/instance: maintenance-dashboard-app
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: maintenance-dashboard-app
-    app.kubernetes.io/version: 1.1.5
-    helm.sh/chart: maintenance-dashboard-app-0.1.9 
 spec:
   endpoints:
   - path: /metrics
     port: http
-    scheme: http
   jobLabel: maintenance-dashboard-source
   namespaceSelector:
     matchNames:
     - maintenance-dashboard-app
   selector:
     matchLabels:
+      app.kubernetes.io/instance: devsecops-testing-maintenance-dashboard-app
       app.kubernetes.io/name: maintenance-dashboard-app
