@@ -13,5 +13,4 @@ spec:
     - maintenance-dashboard-app
   selector:
     matchLabels:
-      app.kubernetes.io/instance: devsecops-testing-maintenance-dashboard-app
       app.kubernetes.io/name: maintenance-dashboard-app
