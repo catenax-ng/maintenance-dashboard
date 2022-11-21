@@ -32,9 +32,17 @@ spec:
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          envFrom:
-          - secretRef:
-              name: nr-api-key
+          env:
+            - name: "NEWRELEASES_API_KEY"
+              valueFrom:
+                secretKeyRef:
+                  key: "NEWRELEASES_API_KEY"
+                  name: "maintenance-dashboard-secret"
+            - name: "GITHUB_TOKEN"
+              valueFrom:
+                secretKeyRef:
+                  key: "GITHUB_TOKEN"
+                  name: "maintenance-dashboard-secret"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
