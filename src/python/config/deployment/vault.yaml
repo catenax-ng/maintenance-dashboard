@@ -1,0 +1,4 @@
+name: "vault"
+path: "apps/vault/Chart.yaml"
+project: "hashicorp/vault-helm"
+prefix: "v"

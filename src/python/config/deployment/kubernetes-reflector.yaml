@@ -1,0 +1,4 @@
+name: "reflector"
+path: "environments/core/applicationsets/reflector-applicationset.yaml"
+project: "emberstack/kubernetes-reflector"
+prefix: "v"

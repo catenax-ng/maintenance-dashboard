@@ -1,0 +1,4 @@
+name: "dex"
+path: "apps/vault/Chart.yaml"
+project: "helm/dex/dex"
+prefix: "v"

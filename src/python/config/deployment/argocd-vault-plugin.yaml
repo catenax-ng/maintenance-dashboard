@@ -1,0 +1,4 @@
+name: "argocd-vault-plugin"
+path: "apps/argocd/base/plugins/argo-vault-plugin.yaml"
+project: "argoproj-labs/argocd-vault-plugin"
+prefix: "v"

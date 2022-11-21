@@ -1,0 +1,4 @@
+name: "ingress-nginx"
+path: "apps/ingress-nginx/Chart.yaml"
+project: "helm/ingress-nginx/ingress-nginx"
+prefix: ""

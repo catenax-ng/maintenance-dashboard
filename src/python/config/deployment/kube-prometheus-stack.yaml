@@ -1,0 +1,4 @@
+name: "kube-prometheus-stack"
+path: "apps/kube-prometheus-stack/Chart.yaml"
+project: "prometheus-community/helm-charts"
+prefix: "kube-prometheus-stack-"

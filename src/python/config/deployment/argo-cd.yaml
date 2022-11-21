@@ -1,0 +1,4 @@
+name: "argo-cd"
+path: "apps/argocd/base/kustomization.yaml"
+project: "argoproj/argo-cd"
+prefix: "v"
