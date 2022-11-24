@@ -3,6 +3,8 @@ kind: ServiceMonitor
 metadata:
   name: maintenance-dashboard-source
   namespace: monitoring
+  labels:
+    release: devsecops-testing-kube-prometheus-stack
 spec:
   endpoints:
   - path: /metrics
@@ -13,4 +15,4 @@ spec:
     - maintenance-dashboard-app
   selector:
     matchLabels:
-      app.kubernetes.io/name: maintenance-dashboard-app
+      app: maintenance-dashboard-app
