@@ -4,7 +4,7 @@ metadata:
   name: maintenance-dashboard-source
   namespace: monitoring
   labels:
-    release: devsecops-testing-kube-prometheus-stack
+    release: {{ .Values.cluster }}-kube-prometheus-stack
 spec:
   endpoints:
   - path: /metrics

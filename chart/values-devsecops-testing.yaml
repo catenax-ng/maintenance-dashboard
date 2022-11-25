@@ -85,3 +85,6 @@ affinity: {}
 avp:
   helm:
     vaultpath: devsecops/data/acme/machine-user
+
+cluster: "devsecops-testing"
+

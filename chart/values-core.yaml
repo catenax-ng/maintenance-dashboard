@@ -8,7 +8,7 @@ image:
   repository: ghcr.io/catenax-ng/maintenance-dashboard/maintenance-dashboard-app
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "1.1.5"
+  tag: "1.1.6"
 
 imagePullSecrets: []
 nameOverride: ""
@@ -85,3 +85,6 @@ affinity: {}
 avp:
   helm:
     vaultpath: devsecops/data/acme/machine-user
+
+cluster: "core"
+
