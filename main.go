@@ -13,6 +13,7 @@ import (
 	"github.com/catenax-ng/maintenance-dashboard/internal/helpers"
 	"github.com/catenax-ng/maintenance-dashboard/internal/latestversions"
 	"github.com/catenax-ng/maintenance-dashboard/internal/metrics"
+	health "github.com/hellofresh/health-go/v5"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -43,6 +44,10 @@ func main() {
 	prometheusHandler := metrics.CreateMetrics()
 	// setup metrics endpoint and start server
 	http.Handle("/metrics", prometheusHandler)
+
+	h, _ := health.New()
+	http.Handle("/health", h.Handler())
+
 	port := ":2112"
 	log.Infof("Starting listening on %v", port)
 	http.ListenAndServe(port, nil)
