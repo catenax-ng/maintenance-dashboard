@@ -62,11 +62,11 @@ func newClientSet() *kubernetes.Clientset {
 
 		config, err := clientcmd.BuildConfigFromFlags("", kubeconfig)
 		if err != nil {
-			panic(err.Error())
+			log.Panic(err.Error())
 		}
 		cs, err := kubernetes.NewForConfig(config)
 		if err != nil {
-			panic(err.Error())
+			log.Panic(err.Error())
 		}
 
 		return cs
@@ -75,11 +75,11 @@ func newClientSet() *kubernetes.Clientset {
 	// creates the in-cluster config
 	config, err := rest.InClusterConfig()
 	if err != nil {
-		panic(err.Error())
+		log.Panic(err.Error())
 	}
 	cs, err := kubernetes.NewForConfig(config)
 	if err != nil {
-		panic(err.Error())
+		log.Panic(err.Error())
 	}
 
 	return cs
@@ -94,7 +94,7 @@ func getSvcsToScan(ctx context.Context, clientSet *kubernetes.Clientset) *corev1
 	services, err := clientSet.CoreV1().Services("").List(ctx, listOptions)
 
 	if err != nil {
-		log.Errorf("Unable to get services to scan: %v", err)
+		log.Panicf("Unable to get services to scan: %v", err)
 	}
 
 	return services

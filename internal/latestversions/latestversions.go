@@ -32,7 +32,7 @@ func GetForApp(appVersionInfo data.AppVersionInfo) *data.AppVersionInfo {
 	for i := 1; i < 10; i++ {
 		releases, lastPage, err := client.Releases.ListByProjectName(ctx, "github", appVersionInfo.NewReleasesName, i)
 		if err != nil {
-			log.Fatalln(err)
+			log.Panic(err)
 		}
 
 		for _, release := range releases {
@@ -84,7 +84,7 @@ func GetAllProjects() []ProjectInfo {
 	for {
 		projects, lastPage, err := client.Projects.List(ctx, *o)
 		if err != nil {
-			log.Fatal(err)
+			log.Panic(err)
 		}
 
 		for _, proj := range projects {
@@ -111,7 +111,7 @@ func GetLatestVersionsForApp(projectID string) semver.Collection {
 	for i := 1; i < 10; i++ {
 		releases, lastPage, err := client.Releases.ListByProjectID(ctx, projectID, i)
 		if err != nil {
-			log.Fatalln(err)
+			log.Panic(err)
 		}
 
 		for _, release := range releases {
