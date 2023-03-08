@@ -1,0 +1,2 @@
+# Base image uses an unpreviled user, no need to define a user in Dockerfile
+AVD-DS-0002
