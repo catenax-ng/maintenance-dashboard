@@ -1,0 +1,53 @@
+name: "KICS"
+
+on:
+  push:
+    branches: [main, master]
+  # pull_request:
+  # The branches below must be a subset of the branches above
+  # branches: [main, master]
+  # paths-ignore:
+  #   - "**/*.md"
+  #   - "**/*.txt"
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+
+jobs:
+  analyze:
+    name: Analyze
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: KICS scan
+        uses: checkmarx/kics-github-action@master
+        with:
+          # Scanning directory .
+          path: "."
+          # Fail on HIGH severity results
+          fail_on: high
+          # Disable secrets detection - we use GitGuardian
+          disable_secrets: true
+          # When provided with a directory on output_path
+          # it will generate the specified reports file named 'results.{extension}'
+          # in this example it will generate:
+          # - results-dir/results.json
+          # - results-dir/results.sarif
+          output_path: kicsResults/
+          output_formats: "json,sarif"
+          #2555bc687f5f7b2b449e9be8d558bb1f8ea541899dea15df39b6dc66ccfda9ed: Base image uses an unpreviled user, no need to define a user in Dockerfile
+          exclude_results: "2555bc687f5f7b2b449e9be8d558bb1f8ea541899dea15df39b6dc66ccfda9ed"
+
+      # Upload findings to GitHub Advanced Security Dashboard
+      - name: Upload SARIF file for GitHub Advanced Security Dashboard
+        if: always()
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: kicsResults/results.sarif
+          
