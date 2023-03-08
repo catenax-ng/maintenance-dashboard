@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/catenax-ng/maintenance-dashboard/internal/data"
+	"github.com/catenax-ng/maintenance-dashboard/internal/helpers"
 	"github.com/catenax-ng/maintenance-dashboard/internal/parseversion"
 	log "github.com/sirupsen/logrus"
 	corev1 "k8s.io/api/core/v1"
@@ -15,8 +16,8 @@ import (
 )
 
 // Returns the versions of nodes and labeled services
-func GetCurrentVersions(ctx context.Context, cluster bool, kubeconfig string) []*data.AppVersionInfo {
-	clientSet := newClientSet(cluster, kubeconfig)
+func GetCurrentVersions(ctx context.Context) []*data.AppVersionInfo {
+	clientSet := newClientSet()
 	services := getSvcsToScan(ctx, clientSet)
 	nodes, err := clientSet.CoreV1().Nodes().List(ctx, metav1.ListOptions{})
 	if err != nil {
@@ -54,8 +55,10 @@ func GetCurrentVersions(ctx context.Context, cluster bool, kubeconfig string) []
 }
 
 // Initializes new ClientSet either based on kubeconfig or in-cluster
-func newClientSet(cluster bool, kubeconfig string) *kubernetes.Clientset {
-	if !cluster {
+func newClientSet() *kubernetes.Clientset {
+	kubeconfig := helpers.GetEnv("KUBE_CONFIG", "")
+	incluster := helpers.GetEnv("IN_CLUSTER", "false")
+	if incluster != "true" {
 
 		config, err := clientcmd.BuildConfigFromFlags("", kubeconfig)
 		if err != nil {

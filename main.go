@@ -2,38 +2,27 @@ package main
 
 import (
 	"context"
-	"flag"
 	"net/http"
+	"strconv"
 	"time"
 
 	// "encoding/json"
 
 	"github.com/catenax-ng/maintenance-dashboard/internal/currentversions"
 	"github.com/catenax-ng/maintenance-dashboard/internal/data"
+	"github.com/catenax-ng/maintenance-dashboard/internal/helpers"
 	"github.com/catenax-ng/maintenance-dashboard/internal/latestversions"
 	"github.com/catenax-ng/maintenance-dashboard/internal/metrics"
 	log "github.com/sirupsen/logrus"
 )
 
-var (
-	cluster    *bool
-	kubeconfig *string
-)
-
-const refreshIntervalInSeconds = 10 //5 * 60
-
-func parseFlags() {
-	// initialize flags
-	cluster = flag.Bool("in-cluster", false, "Specify if the code is running inside a cluster or from outside.")
-	kubeconfig = flag.String("kubeconfig", "", "absolute path to the kubeconfig file")
-	flag.Parse()
-}
+var refreshIntervalInSeconds = helpers.GetEnv("REFRESH_INTERVAL_SECONDS", "60")
 
 func syncAppsVersionInfo() {
 	for {
 		ctx := context.Background()
 		var appsVersionInfo []*data.AppVersionInfo
-		appCurrentInfos := currentversions.GetCurrentVersions(ctx, *cluster, *kubeconfig)
+		appCurrentInfos := currentversions.GetCurrentVersions(ctx)
 
 		for _, appCurrentInfo := range appCurrentInfos {
 			appVersionInfo := latestversions.GetForApp(*appCurrentInfo)
@@ -41,13 +30,13 @@ func syncAppsVersionInfo() {
 		}
 
 		metrics.UpdateMetrics(appsVersionInfo)
-		time.Sleep(time.Duration(refreshIntervalInSeconds * float64(time.Second)))
+		refreshSeconds, _ := strconv.ParseFloat(refreshIntervalInSeconds, 64)
+		time.Sleep(time.Duration(refreshSeconds * float64(time.Second)))
 	}
 }
 
 func main() {
 	log.SetFormatter(&log.JSONFormatter{})
-	parseFlags()
 
 	go syncAppsVersionInfo()
 
