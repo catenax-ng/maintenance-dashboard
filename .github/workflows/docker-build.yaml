@@ -2,8 +2,6 @@ name: Build - Docker image (SemVer)
 
 on:
   push:
-    branches:
-      - main
     # trigger events for SemVer like tags
     tags:
       - 'v*.*.*'
