@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "maintenance-dashboard.fullname" . }}-test-connection"
+  labels:
+    {{- include "maintenance-dashboard.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['{{ include "maintenance-dashboard.fullname" . }}:{{ .Values.service.port }}']
+      resources:
+        limits:
+          cpu: 100m
+          memory: 128Mi
+        requests:
+          cpu: 100m
+          memory: 128Mi
+  restartPolicy: Never
