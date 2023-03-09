@@ -36,7 +36,7 @@ podAnnotations: {}
 
 podSecurityContext:
   # fsGroup: 2000
-  runAsUser: 8877
+  runAsUser: 65532
 
 securityContext:
   # capabilities:
@@ -45,7 +45,7 @@ securityContext:
   readOnlyRootFilesystem: true
   runAsNonRoot: true
   allowPrivilegeEscalation: false
-  runAsUser: 8877
+  runAsUser: 65532
 
 service:
   type: ClusterIP
