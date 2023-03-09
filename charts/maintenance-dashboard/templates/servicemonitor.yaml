@@ -2,13 +2,15 @@ apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: {{ include "maintenance-dashboard.fullname" . }}
+  namespace: monitoring
 spec:
   endpoints:
   - path: /metrics
     port: http
   jobLabel: {{ include "maintenance-dashboard.fullname" . }}
   namespaceSelector:
-    any: true
+    matchNames:
+    - maintenance-dashboard-app
   selector:
     matchLabels:
-      {{- include "maintenance-dashboard.selectorLabels" . | nindent 6 }}
+      app: maintenance-dashboard
