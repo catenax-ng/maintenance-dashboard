@@ -4,13 +4,11 @@
 
 # NewReleases.io key to use for API calls
 newReleasesApiKey: ""
-# GitHub Access Token to use for API calls
-ghAccessToken: ""
 # True if the process is running in that cluster that is being scanned
 inCluster: true
 # Config file to use if the scanned cluster external
 kubeConfig: ""
-# Runs every hour
+# How often the scan runs
 refreshIntervalSeconds: 3600
 
 replicaCount: 1
