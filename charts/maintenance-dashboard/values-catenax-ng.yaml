@@ -1,0 +1,2 @@
+newReleasesApiKey: "<path:devsecops/acme/machine-user#machine-user-PAT-token>"
+ghAccessToken: "<path:devsecops/acme/machine-user#newreleases-api-key>"
