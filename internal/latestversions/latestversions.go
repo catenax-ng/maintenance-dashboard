@@ -20,7 +20,7 @@ type ProjectInfo struct {
 }
 
 var (
-	NewReleasesApiKey = os.Getenv("NEWREKEASES_API_KEY")
+	NewReleasesApiKey = os.Getenv("NEWRELEASES_API_KEY")
 )
 
 // Get stable releases for an app from NewReleases.io, parse them to semver and compare to current version

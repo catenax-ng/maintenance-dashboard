@@ -7,6 +7,7 @@ import (
 	"github.com/catenax-ng/maintenance-dashboard/internal/data"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	log "github.com/sirupsen/logrus"
 )
 
 type metrics struct {
@@ -36,10 +37,12 @@ func NewMetrics(reg prometheus.Registerer) *metrics {
 	}
 
 	reg.MustRegister(metr.info)
+	log.Infoln("apps_version_info metric created and registered.")
 	return metr
 }
 
 func UpdateMetrics(appsVersionInfo []*data.AppVersionInfo) {
+	log.Infoln("Updating the metrics with the latest results.")
 	for _, appVersionInfo := range appsVersionInfo {
 		m.info.With(prometheus.Labels{
 			"app_name":             appVersionInfo.NewReleasesName,

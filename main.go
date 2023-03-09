@@ -21,6 +21,8 @@ var refreshIntervalInSeconds = helpers.GetEnv("REFRESH_INTERVAL_SECONDS", "60")
 
 func syncAppsVersionInfo() {
 	for {
+		log.Infoln("New sync started.")
+		start := time.Now()
 		ctx := context.Background()
 		var appsVersionInfo []*data.AppVersionInfo
 		appCurrentInfos := currentversions.GetCurrentVersions(ctx)
@@ -29,14 +31,18 @@ func syncAppsVersionInfo() {
 			appVersionInfo := latestversions.GetForApp(*appCurrentInfo)
 			appsVersionInfo = append(appsVersionInfo, appVersionInfo)
 		}
-
 		metrics.UpdateMetrics(appsVersionInfo)
+
+		elapsed := time.Since(start)
+		log.Infof("Sync finished in %v seconds.\n", elapsed.Seconds())
+
 		refreshSeconds, _ := strconv.ParseFloat(refreshIntervalInSeconds, 64)
 		time.Sleep(time.Duration(refreshSeconds * float64(time.Second)))
 	}
 }
 
 func main() {
+	log.Info("App startup ongoing.")
 	log.SetFormatter(&log.JSONFormatter{})
 
 	go syncAppsVersionInfo()
