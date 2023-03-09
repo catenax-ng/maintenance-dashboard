@@ -10,6 +10,8 @@ inCluster: true
 kubeConfig: ""
 # How often the scan runs
 refreshIntervalSeconds: 3600
+# Name of the cluster the app is deployed to. (Necessary for prometheus to find the servicemonitor)
+cluster: ""
 
 replicaCount: 1
 

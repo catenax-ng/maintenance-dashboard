@@ -1,0 +1,175 @@
+---
+# Source: maintenance-dashboard/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: devsecops-testing-maintenance-dashboard
+  labels:
+    helm.sh/chart: maintenance-dashboard-1.0.8
+    app.kubernetes.io/name: maintenance-dashboard
+    app.kubernetes.io/instance: devsecops-testing
+    app.kubernetes.io/version: "1.0.4"
+    app.kubernetes.io/managed-by: Helm
+    app: maintenance-dashboard
+---
+# Source: maintenance-dashboard/templates/clusterrole.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+
+metadata:
+  name: devsecops-testing-maintenance-dashboard-cluster-role
+
+rules:
+  - apiGroups: [""]
+    resources: ["services", "nodes"]
+    verbs: ["list", "get"]
+---
+# Source: maintenance-dashboard/templates/clusterrolebinding.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+
+metadata:
+  name: devsecops-testing-maintenance-dashboard-cluster-role-binding
+
+roleRef:
+  kind: ClusterRole
+  name: devsecops-testing-maintenance-dashboard-cluster-role
+  apiGroup: rbac.authorization.k8s.io
+
+subjects:
+  - kind: ServiceAccount
+    name: devsecops-testing-maintenance-dashboard
+    namespace: default
+---
+# Source: maintenance-dashboard/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: devsecops-testing-maintenance-dashboard
+  labels:
+    helm.sh/chart: maintenance-dashboard-1.0.8
+    app.kubernetes.io/name: maintenance-dashboard
+    app.kubernetes.io/instance: devsecops-testing
+    app.kubernetes.io/version: "1.0.4"
+    app.kubernetes.io/managed-by: Helm
+    app: maintenance-dashboard
+spec:
+  type: ClusterIP
+  ports:
+    - port: 2112
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: maintenance-dashboard
+    app.kubernetes.io/instance: devsecops-testing
+---
+# Source: maintenance-dashboard/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: devsecops-testing-maintenance-dashboard
+  labels:
+    helm.sh/chart: maintenance-dashboard-1.0.8
+    app.kubernetes.io/name: maintenance-dashboard
+    app.kubernetes.io/instance: devsecops-testing
+    app.kubernetes.io/version: "1.0.4"
+    app.kubernetes.io/managed-by: Helm
+    app: maintenance-dashboard
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: maintenance-dashboard
+      app.kubernetes.io/instance: devsecops-testing
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: maintenance-dashboard
+        app.kubernetes.io/instance: devsecops-testing
+    spec:
+      serviceAccountName: devsecops-testing-maintenance-dashboard
+      securityContext:
+        runAsUser: 65532
+      containers:
+        - name: maintenance-dashboard
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 65532
+          image: "ghcr.io/catenax-ng/maintenance-dashboard:1.0.4"
+          imagePullPolicy: Always
+          env:
+            - name: NEWRELEASES_API_KEY
+              value: ""
+            - name: IN_CLUSTER
+              value: "true"
+            - name: KUBE_CONFIG
+              value: ""
+            - name: REFRESH_INTERVAL_SECONDS
+              value: "3600"
+          ports:
+            - name: http
+              containerPort: 2112
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+          resources:
+            limits:
+              cpu: 100m
+              memory: 128Mi
+            requests:
+              cpu: 100m
+              memory: 128Mi
+---
+# Source: maintenance-dashboard/templates/servicemonitor.yaml
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: devsecops-testing-maintenance-dashboard
+  labels:
+    release: devsecops-testing-kube-prometheus-stack
+spec:
+  endpoints:
+  - path: /metrics
+    port: http
+  jobLabel: devsecops-testing-maintenance-dashboard
+  selector:
+    matchLabels:
+      app: maintenance-dashboard
+---
+# Source: maintenance-dashboard/templates/tests/test-connection.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "devsecops-testing-maintenance-dashboard-test-connection"
+  labels:
+    helm.sh/chart: maintenance-dashboard-1.0.8
+    app.kubernetes.io/name: maintenance-dashboard
+    app.kubernetes.io/instance: devsecops-testing
+    app.kubernetes.io/version: "1.0.4"
+    app.kubernetes.io/managed-by: Helm
+    app: maintenance-dashboard
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['devsecops-testing-maintenance-dashboard:2112']
+      resources:
+        limits:
+          cpu: 100m
+          memory: 128Mi
+        requests:
+          cpu: 100m
+          memory: 128Mi
+  restartPolicy: Never
