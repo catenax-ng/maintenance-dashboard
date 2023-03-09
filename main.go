@@ -42,7 +42,7 @@ func syncAppsVersionInfo() {
 }
 
 func main() {
-	log.Info("App startup ongoing.")
+	log.Infoln("App startup ongoing.")
 	log.SetFormatter(&log.JSONFormatter{})
 
 	go syncAppsVersionInfo()
@@ -55,6 +55,6 @@ func main() {
 	http.Handle("/health", h.Handler())
 
 	port := ":2112"
-	log.Infof("Starting listening on %v", port)
+	log.Infof("Listening on %v", port)
 	http.ListenAndServe(port, nil)
 }

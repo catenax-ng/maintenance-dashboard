@@ -4,7 +4,6 @@ import (
 	"context"
 	"os"
 	"sort"
-	"strings"
 
 	log "github.com/sirupsen/logrus"
 
@@ -38,7 +37,7 @@ func GetForApp(appVersionInfo data.AppVersionInfo) *data.AppVersionInfo {
 		for _, release := range releases {
 			parsedVersion, err := parseversion.ToSemver(release.Version)
 			if err != nil {
-				log.Warningf("Skipping invalid version: %v\n", release.Version)
+				log.Warningf("Skipping invalid version: %v", release.Version)
 			} else if parsedVersion.Prerelease() == "" {
 				vs = append(vs, parsedVersion)
 			}
@@ -71,62 +70,4 @@ func GetForApp(appVersionInfo data.AppVersionInfo) *data.AppVersionInfo {
 		LatestMinorVersion: latestMinorVersion,
 		LatestPatchVersion: latestPatchVersion,
 	}
-}
-
-// Get all the projects added to the newreleases account and parse them to ProjectInfo struct
-func GetAllProjects() []ProjectInfo {
-	client := newreleases.NewClient(NewReleasesApiKey, nil)
-	ctx := context.Background()
-	var pi []ProjectInfo
-	o := &newreleases.ProjectListOptions{
-		Page: 1,
-	}
-	for {
-		projects, lastPage, err := client.Projects.List(ctx, *o)
-		if err != nil {
-			log.Panic(err)
-		}
-
-		for _, proj := range projects {
-			releaseNameParts := strings.Split(proj.Name, "/")
-			releaseName := releaseNameParts[len(releaseNameParts)-1]
-			pi = append(pi, ProjectInfo{ID: proj.ID, ReleaseName: releaseName})
-		}
-
-		if o.Page >= lastPage {
-			break
-		}
-		o.Page++
-	}
-
-	return pi
-}
-
-// Get max 10 pages of releases for an app and parse versions to semVer
-func GetLatestVersionsForApp(projectID string) semver.Collection {
-	client := newreleases.NewClient(NewReleasesApiKey, nil)
-	ctx := context.Background()
-	vs := []*semver.Version{}
-
-	for i := 1; i < 10; i++ {
-		releases, lastPage, err := client.Releases.ListByProjectID(ctx, projectID, i)
-		if err != nil {
-			log.Panic(err)
-		}
-
-		for _, release := range releases {
-			parsedVersion, err := parseversion.ToSemver(release.Version)
-			if err != nil {
-				log.Warningf("Skipping invalid version: %v\n", release.Version)
-			} else {
-				vs = append(vs, parsedVersion)
-			}
-		}
-
-		if i >= lastPage {
-			break
-		}
-	}
-
-	return vs
 }

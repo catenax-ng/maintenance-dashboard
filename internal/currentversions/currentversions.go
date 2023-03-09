@@ -30,7 +30,7 @@ func GetCurrentVersions(ctx context.Context) []*data.AppVersionInfo {
 	for _, node := range nodes.Items {
 		semverVersion, err := parseversion.ToSemver(node.Status.NodeInfo.KubeletVersion)
 		if err != nil {
-			log.Warnf("Skipping invalid version: %v\n", node.Status.NodeInfo.KubeletVersion)
+			log.Warnf("Skipping invalid version: %v", node.Status.NodeInfo.KubeletVersion)
 		} else {
 			result = append(result, &data.AppVersionInfo{
 				CurrentVersion:  semverVersion,
@@ -46,7 +46,7 @@ func GetCurrentVersions(ctx context.Context) []*data.AppVersionInfo {
 		versionLabel := service.ObjectMeta.Labels["app.kubernetes.io/version"]
 		semverVersion, err := parseversion.ToSemver(versionLabel)
 		if err != nil {
-			log.Warnf("Skipping invalid version: %v\n", versionLabel)
+			log.Warnf("Skipping invalid version: %v", versionLabel)
 		} else {
 			result = append(result, &data.AppVersionInfo{
 				CurrentVersion:  semverVersion,
@@ -57,7 +57,7 @@ func GetCurrentVersions(ctx context.Context) []*data.AppVersionInfo {
 
 	log.Infoln("Resources in the cluster to be scanned with their current version:")
 	for _, res := range result {
-		log.Infof("%v: %v\n", res.NewReleasesName, res.CurrentVersion.String())
+		log.Infof("%v: %v", res.NewReleasesName, res.CurrentVersion.String())
 	}
 	return result
 }
@@ -102,7 +102,7 @@ func getSvcsToScan(ctx context.Context, clientSet *kubernetes.Clientset) *corev1
 	services, err := clientSet.CoreV1().Services("").List(ctx, listOptions)
 
 	if err != nil {
-		log.Panicf("Unable to get services to scan: %v", err)
+		log.Panicf("Unable to get services to scan: %v", err.Error())
 	}
 
 	return services
