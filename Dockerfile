@@ -15,10 +15,8 @@ FROM gcr.io/distroless/static:nonroot AS final
 WORKDIR /app
 
 COPY --from=builder --chown=nonroot:nonroot /app/maintenance-dashboard /app/maintenance-dashboard
-
+USER 65532
 HEALTHCHECK --interval=5m --timeout=3s \
   CMD curl -f http://localhost:2112/health || exit 1
 
 ENTRYPOINT ["/app/maintenance-dashboard"]
-
-CMD ["-in-cluster=true"]
