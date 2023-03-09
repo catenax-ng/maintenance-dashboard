@@ -34,7 +34,7 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
-            - name: NEWREKEASES_API_KEY
+            - name: NEWRELEASES_API_KEY
               value: {{ quote .Values.newReleasesApiKey }}
             - name: IN_CLUSTER
               value: {{ quote .Values.inCluster }}
