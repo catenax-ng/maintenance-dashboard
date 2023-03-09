@@ -36,8 +36,6 @@ spec:
           env:
             - name: NEWREKEASES_API_KEY
               value: {{ quote .Values.newReleasesApiKey }}
-            - name: GH_ACCESS_TOKEN
-              value: {{ quote .Values.ghAccessToken }}
             - name: IN_CLUSTER
               value: {{ quote .Values.inCluster }}
             - name: KUBE_CONFIG
