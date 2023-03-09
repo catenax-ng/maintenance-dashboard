@@ -13,6 +13,10 @@ The purpose of this application is to gather version information about the appli
      - Latest patch version
 3. The results are exposed at the `/metrics` endpoint as the application is listening on the `:2112` port within the cluster.
 
+## Installation
+
+See in the [INSTALL.md](INSTALL.md).
+
 ## TODOs
 
-- Configurable refresh interval
+- Improve label and annotation process for components to scan in the cluster
