@@ -2,15 +2,13 @@ apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: {{ include "maintenance-dashboard.fullname" . }}
-  namespace: monitoring
+  labels:
+    release: {{ .Release.Name }}-kube-prometheus-stack
 spec:
   endpoints:
   - path: /metrics
     port: http
   jobLabel: {{ include "maintenance-dashboard.fullname" . }}
-  namespaceSelector:
-    matchNames:
-    - maintenance-dashboard-app
   selector:
     matchLabels:
       app: maintenance-dashboard
