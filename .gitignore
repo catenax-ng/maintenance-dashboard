@@ -27,3 +27,6 @@ kubeconfig
 
 # IDE folders and files
 .vscode
+
+# Go temp debug file
+__debug_bin
