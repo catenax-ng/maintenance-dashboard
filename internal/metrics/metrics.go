@@ -2,7 +2,6 @@ package metrics
 
 import (
 	"net/http"
-	"time"
 
 	"github.com/catenax-ng/maintenance-dashboard/internal/data"
 	"github.com/prometheus/client_golang/prometheus"
@@ -17,17 +16,17 @@ type metrics struct {
 var m *metrics
 
 // Add metrics http handler
-func CreateMetrics() http.Handler {
-	// get rid of the default metrics
+func CreateMetricsHandler() http.Handler {
+	// Get rid of the default metrics
 	r := prometheus.NewRegistry()
-	// add the metrics for all applications with Gauge type
-	m = NewMetrics(r)
-	//addAppMetrics(r, appsVersionInfo)
+	// Add the metrics for all applications with Gauge type
+	m = CreateMetrics(r)
 	handler := promhttp.HandlerFor(r, promhttp.HandlerOpts{})
 	return handler
 }
 
-func NewMetrics(reg prometheus.Registerer) *metrics {
+// Create new metric type with labels and add it to the registry.
+func CreateMetrics(reg prometheus.Registerer) *metrics {
 	metr := &metrics{
 		info: prometheus.NewGaugeVec(prometheus.GaugeOpts{
 			Namespace: "maintenance",
@@ -41,6 +40,7 @@ func NewMetrics(reg prometheus.Registerer) *metrics {
 	return metr
 }
 
+// Update metrics with the latest app version infos.
 func UpdateMetrics(appsVersionInfo []*data.AppVersionInfo) {
 	log.Infoln("Updating the metrics with the latest results.")
 	for _, appVersionInfo := range appsVersionInfo {
@@ -52,5 +52,4 @@ func UpdateMetrics(appsVersionInfo []*data.AppVersionInfo) {
 			"latest_patch_version": appVersionInfo.LatestPatchVersion.String(),
 		}).Set(1)
 	}
-	time.Sleep(time.Duration(10 * float64(time.Second)))
 }

@@ -80,7 +80,7 @@ func newClientSet() *kubernetes.Clientset {
 		return cs
 	}
 
-	// creates the in-cluster config
+	// Creates the in-cluster config
 	config, err := rest.InClusterConfig()
 	if err != nil {
 		log.Panic(err.Error())

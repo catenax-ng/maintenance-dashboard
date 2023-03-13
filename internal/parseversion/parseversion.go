@@ -5,6 +5,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// Tries to parse the provided string to SemVer. Returns nil when failed.
 func ToSemver(version string) (*semver.Version, error) {
 	v, err := semver.NewVersion(version)
 	if err != nil {

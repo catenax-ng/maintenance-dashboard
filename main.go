@@ -19,6 +19,7 @@ import (
 
 var refreshIntervalInSeconds = helpers.GetEnv("REFRESH_INTERVAL_SECONDS", "60")
 
+// Sync current versions and latest versions periodically
 func syncAppsVersionInfo() {
 	for {
 		log.Infoln("New sync started.")
@@ -34,7 +35,7 @@ func syncAppsVersionInfo() {
 		metrics.UpdateMetrics(appsVersionInfo)
 
 		elapsed := time.Since(start)
-		log.Infof("Sync finished in %v seconds.\n", elapsed.Seconds())
+		log.Infof("Sync finished in %v seconds.", elapsed.Seconds())
 
 		refreshSeconds, _ := strconv.ParseFloat(refreshIntervalInSeconds, 64)
 		time.Sleep(time.Duration(refreshSeconds * float64(time.Second)))
@@ -42,18 +43,21 @@ func syncAppsVersionInfo() {
 }
 
 func main() {
-	log.Infoln("App startup ongoing.")
+	// Set logging format to json
 	log.SetFormatter(&log.JSONFormatter{})
+	log.Infoln("App startup ongoing.")
 
 	go syncAppsVersionInfo()
 
-	prometheusHandler := metrics.CreateMetrics()
-	// setup metrics endpoint and start server
+	prometheusHandler := metrics.CreateMetricsHandler()
+	// Setup metrics endpoint and start server
 	http.Handle("/metrics", prometheusHandler)
 
+	// Create health http handler
 	h, _ := health.New()
 	http.Handle("/health", h.Handler())
 
+	// Start webserver on port 2112
 	port := ":2112"
 	log.Infof("Listening on %v", port)
 	http.ListenAndServe(port, nil)
