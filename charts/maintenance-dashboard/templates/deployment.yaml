@@ -42,6 +42,8 @@ spec:
               value: {{ quote .Values.kubeConfig }}
             - name: REFRESH_INTERVAL_SECONDS
               value: {{ quote .Values.refreshIntervalSeconds }}
+            - name: CURRENT_VERSION
+              value: {{ quote .Values.image.tag | default .Chart.AppVersion }}
           ports:
             - name: http
               containerPort: 2112

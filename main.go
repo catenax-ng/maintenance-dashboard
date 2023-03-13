@@ -17,7 +17,10 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-var refreshIntervalInSeconds = helpers.GetEnv("REFRESH_INTERVAL_SECONDS", "60")
+var (
+	refreshIntervalInSeconds = helpers.GetEnv("REFRESH_INTERVAL_SECONDS", "60")
+	current_version          = helpers.GetEnv("CURRENT_VERSION", "DEV")
+)
 
 // Sync current versions and latest versions periodically
 func syncAppsVersionInfo() {
@@ -54,7 +57,10 @@ func main() {
 	http.Handle("/metrics", prometheusHandler)
 
 	// Create health http handler
-	h, _ := health.New()
+	h, _ := health.New(health.WithComponent(health.Component{
+		Name:    "maintenance_dashboard",
+		Version: current_version,
+	}))
 	http.Handle("/health", h.Handler())
 
 	// Start webserver on port 2112
