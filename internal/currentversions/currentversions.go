@@ -35,6 +35,7 @@ func GetCurrentVersions(ctx context.Context) []*data.AppVersionInfo {
 			result = append(result, &data.AppVersionInfo{
 				CurrentVersion:  semverVersion,
 				NewReleasesName: "kubernetes/kubernetes",
+				ResourceName:    node.Name,
 			})
 		}
 	}
@@ -51,6 +52,7 @@ func GetCurrentVersions(ctx context.Context) []*data.AppVersionInfo {
 			result = append(result, &data.AppVersionInfo{
 				CurrentVersion:  semverVersion,
 				NewReleasesName: service.ObjectMeta.Annotations["maintenance/releasename"],
+				ResourceName:    service.ObjectMeta.Name,
 			})
 		}
 	}

@@ -66,6 +66,7 @@ func GetForApp(appVersionInfo data.AppVersionInfo) *data.AppVersionInfo {
 	return &data.AppVersionInfo{
 		NewReleasesName:    appVersionInfo.NewReleasesName,
 		CurrentVersion:     appVersionInfo.CurrentVersion,
+		ResourceName:       appVersionInfo.ResourceName,
 		LatestMajorVersion: latestMajorVersion,
 		LatestMinorVersion: latestMinorVersion,
 		LatestPatchVersion: latestPatchVersion,

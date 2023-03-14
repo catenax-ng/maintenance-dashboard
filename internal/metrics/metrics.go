@@ -9,47 +9,52 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-type metrics struct {
-	info *prometheus.GaugeVec
-}
-
-var m *metrics
+var registry *prometheus.Registry
+var metrics = map[string]prometheus.Gauge{}
 
 // Add metrics http handler
 func CreateMetricsHandler() http.Handler {
 	// Get rid of the default metrics
-	r := prometheus.NewRegistry()
+	registry = prometheus.NewRegistry()
 	// Add the metrics for all applications with Gauge type
-	m = CreateMetrics(r)
-	handler := promhttp.HandlerFor(r, promhttp.HandlerOpts{})
+	handler := promhttp.HandlerFor(registry, promhttp.HandlerOpts{})
 	return handler
 }
 
-// Create new metric type with labels and add it to the registry.
-func CreateMetrics(reg prometheus.Registerer) *metrics {
-	metr := &metrics{
-		info: prometheus.NewGaugeVec(prometheus.GaugeOpts{
-			Namespace: "maintenance",
-			Name:      "apps_version_info",
-			Help:      "Information about current and latest versions for applications",
-		}, []string{"app_name", "current_version", "latest_major_version", "latest_minor_version", "latest_patch_version"}),
+// Generate the metrics for every apps current and latest major, minor and patch versions
+func CreateOrUpdateMetrics(appsVersionInfo []*data.AppVersionInfo) {
+	for _, appVersionInfo := range appsVersionInfo {
+		CreateOrUpdateMetricSingle(appVersionInfo.NewReleasesName, appVersionInfo.ResourceName, "major", "current", float64(appVersionInfo.CurrentVersion.Major()))
+		CreateOrUpdateMetricSingle(appVersionInfo.NewReleasesName, appVersionInfo.ResourceName, "minor", "current", float64(appVersionInfo.CurrentVersion.Minor()))
+		CreateOrUpdateMetricSingle(appVersionInfo.NewReleasesName, appVersionInfo.ResourceName, "patch", "current", float64(appVersionInfo.CurrentVersion.Patch()))
+		CreateOrUpdateMetricSingle(appVersionInfo.NewReleasesName, appVersionInfo.ResourceName, "major", "latest", float64(appVersionInfo.LatestMajorVersion.Major()))
+		CreateOrUpdateMetricSingle(appVersionInfo.NewReleasesName, appVersionInfo.ResourceName, "minor", "latest", float64(appVersionInfo.LatestMajorVersion.Minor()))
+		CreateOrUpdateMetricSingle(appVersionInfo.NewReleasesName, appVersionInfo.ResourceName, "patch", "latest", float64(appVersionInfo.LatestMajorVersion.Patch()))
 	}
 
-	reg.MustRegister(metr.info)
-	log.Infoln("apps_version_info metric created and registered.")
-	return metr
+	log.Infoln("Metrics created and updated.")
 }
 
-// Update metrics with the latest app version infos.
-func UpdateMetrics(appsVersionInfo []*data.AppVersionInfo) {
-	log.Infoln("Updating the metrics with the latest results.")
-	for _, appVersionInfo := range appsVersionInfo {
-		m.info.With(prometheus.Labels{
-			"app_name":             appVersionInfo.NewReleasesName,
-			"current_version":      appVersionInfo.CurrentVersion.String(),
-			"latest_major_version": appVersionInfo.LatestMajorVersion.String(),
-			"latest_minor_version": appVersionInfo.LatestMinorVersion.String(),
-			"latest_patch_version": appVersionInfo.LatestPatchVersion.String(),
-		}).Set(1)
+// Create a new metric is it doesn't exist then set it's value
+func CreateOrUpdateMetricSingle(releaseName string, resourceName string, versionPart string, origin string, value float64) {
+	mapKey := resourceName + "-" + origin + "-" + versionPart
+	metric := metrics[mapKey]
+	if metric == nil {
+		metrics[mapKey] = prometheus.NewGauge(prometheus.GaugeOpts{
+			Namespace: "maintenance",
+			Name:      "app_version_info",
+			Help:      "Version information about an application",
+			ConstLabels: prometheus.Labels{
+				"release_name":  releaseName,
+				"resource_name": resourceName,
+				"version_part":  versionPart,
+				"origin":        origin,
+			},
+		})
+		metric = metrics[mapKey]
+		registry.MustRegister(metric)
+		log.Infof("app_version_info metric created and registered for %v %v version part of app %v.", origin, versionPart, resourceName)
 	}
+	metric.Set(value)
+	log.Infof("app_version_info metric %v value set: %v", mapKey, value)
 }

@@ -35,7 +35,7 @@ func syncAppsVersionInfo() {
 			appVersionInfo := latestversions.GetForApp(*appCurrentInfo)
 			appsVersionInfo = append(appsVersionInfo, appVersionInfo)
 		}
-		metrics.UpdateMetrics(appsVersionInfo)
+		metrics.CreateOrUpdateMetrics(appsVersionInfo)
 
 		elapsed := time.Since(start)
 		log.Infof("Sync finished in %v seconds.", elapsed.Seconds())
