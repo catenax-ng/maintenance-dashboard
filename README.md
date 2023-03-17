@@ -17,6 +17,26 @@ The purpose of this application is to gather version information about the appli
 
 See in the [INSTALL.md](INSTALL.md).
 
+## Configure apps to be scanned
+
+``` sh
+
+# 1. Select a k8s resource that has a kind of `service`.
+kubectl get svc -n [NAMESPACE] [SERVICE_NAME] -o jsonpath="{.metadata.labels.app\.kubernetes\.io/version}"
+
+# 2. Add the following label to this service: `maintenance/scan=true`.
+kubectl label svc -n [NAMESPACE] [SERVICE_NAME] maintenance/scan=true
+
+# 3. Check if this recommended label exists on the service: `app.kubernetes.io/version`. If not, add it with the proper app version in `semver` format.
+kubectl label svc -n [NAMESPACE] [SERVICE_NAME] app.kubernetes.io/version=[SEMVER_VERSION]
+
+# 4. Annotate service with the key `maintenance/releasename` and the value from the name of the project found on NewReleases.io.
+kubectl annotate svc -n [NAMESPACE] [SERVICE_NAME] maintenance/releasename=[NEWRELEASES_PROJECT_NAME]
+
+```
+
+When these labels and annotations are set, the maintenance dashboard will pick up and serve metrics about the application.
+
 ## TODOs
 
 - Improve label and annotation process for components to scan in the cluster
