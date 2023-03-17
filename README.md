@@ -22,15 +22,17 @@ See in the [INSTALL.md](INSTALL.md).
 ``` sh
 
 # 1. Select a k8s resource that has a kind of `service`.
-kubectl get svc -n [NAMESPACE] [SERVICE_NAME] -o jsonpath="{.metadata.labels.app\.kubernetes\.io/version}"
 
 # 2. Add the following label to this service: `maintenance/scan=true`.
 kubectl label svc -n [NAMESPACE] [SERVICE_NAME] maintenance/scan=true
 
-# 3. Check if this recommended label exists on the service: `app.kubernetes.io/version`. If not, add it with the proper app version in `semver` format.
+# 3. Check if this recommended label exists on the service: `app.kubernetes.io/version`.
+kubectl get svc -n [NAMESPACE] [SERVICE_NAME] -o jsonpath="{.metadata.labels.app\.kubernetes\.io/version}"
+
+# 4. If not, add it with the proper app version in `semver` format.
 kubectl label svc -n [NAMESPACE] [SERVICE_NAME] app.kubernetes.io/version=[SEMVER_VERSION]
 
-# 4. Annotate service with the key `maintenance/releasename` and the value from the name of the project found on NewReleases.io.
+# 5. Annotate service with the key `maintenance/releasename` and the value from the name of the project found on NewReleases.io.
 kubectl annotate svc -n [NAMESPACE] [SERVICE_NAME] maintenance/releasename=[NEWRELEASES_PROJECT_NAME]
 
 ```
