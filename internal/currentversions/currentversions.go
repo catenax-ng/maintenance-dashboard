@@ -7,7 +7,6 @@ import (
 	"github.com/catenax-ng/maintenance-dashboard/internal/helpers"
 	"github.com/catenax-ng/maintenance-dashboard/internal/parseversion"
 	log "github.com/sirupsen/logrus"
-	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/client-go/kubernetes"
@@ -41,21 +40,8 @@ func GetCurrentVersions(ctx context.Context) []*data.AppVersionInfo {
 	}
 
 	log.Infoln("Getting version info about services.")
-	services := getSvcsToScan(ctx, clientSet)
-	log.Infof("Found %v services to scan.", len(services.Items))
-	for _, service := range services.Items {
-		versionLabel := service.ObjectMeta.Labels["app.kubernetes.io/version"]
-		semverVersion, err := parseversion.ToSemver(versionLabel)
-		if err != nil {
-			log.Warnf("Skipping invalid version: %v", versionLabel)
-		} else {
-			result = append(result, &data.AppVersionInfo{
-				CurrentVersion:  semverVersion,
-				NewReleasesName: service.ObjectMeta.Annotations["maintenance/releasename"],
-				ResourceName:    service.ObjectMeta.Name,
-			})
-		}
-	}
+	apps := getAppsToScan(ctx, clientSet)
+	result = append(result, apps...)
 
 	log.Infoln("Resources in the cluster to be scanned with their current version:")
 	for _, res := range result {
@@ -96,16 +82,68 @@ func newClientSet() *kubernetes.Clientset {
 }
 
 // Get services annotated with maintenance/scan=true
-func getSvcsToScan(ctx context.Context, clientSet *kubernetes.Clientset) *corev1.ServiceList {
+func getAppsToScan(ctx context.Context, clientSet *kubernetes.Clientset) []*data.AppVersionInfo {
+	var result []*data.AppVersionInfo
+
 	labelSelector := metav1.LabelSelector{MatchLabels: map[string]string{"maintenance/scan": "true"}}
 	listOptions := metav1.ListOptions{
 		LabelSelector: labels.Set(labelSelector.MatchLabels).String(),
 	}
-	services, err := clientSet.CoreV1().Services("").List(ctx, listOptions)
 
+	deployments, err := clientSet.AppsV1().Deployments("").List(ctx, listOptions)
+	for _, deployment := range deployments.Items {
+		versionLabel := deployment.ObjectMeta.Labels["app.kubernetes.io/version"]
+		semverVersion, err := parseversion.ToSemver(versionLabel)
+		if err != nil {
+			log.Warnf("Skipping invalid version: %v", versionLabel)
+		} else {
+			result = append(result, &data.AppVersionInfo{
+				CurrentVersion:  semverVersion,
+				NewReleasesName: deployment.ObjectMeta.Annotations["maintenance/releasename"],
+				ResourceName:    deployment.ObjectMeta.Name,
+			})
+		}
+	}
 	if err != nil {
-		log.Panicf("Unable to get services to scan: %v", err.Error())
+		log.Panicf("Unable to get deployments to scan: %v", err.Error())
 	}
 
-	return services
+	statefulsets, err := clientSet.AppsV1().StatefulSets("").List(ctx, listOptions)
+	for _, statefulset := range statefulsets.Items {
+		versionLabel := statefulset.ObjectMeta.Labels["app.kubernetes.io/version"]
+		semverVersion, err := parseversion.ToSemver(versionLabel)
+		if err != nil {
+			log.Warnf("Skipping invalid version: %v", versionLabel)
+		} else {
+			result = append(result, &data.AppVersionInfo{
+				CurrentVersion:  semverVersion,
+				NewReleasesName: statefulset.ObjectMeta.Annotations["maintenance/releasename"],
+				ResourceName:    statefulset.ObjectMeta.Name,
+			})
+		}
+	}
+	if err != nil {
+		log.Panicf("Unable to get statefulsets to scan: %v", err.Error())
+	}
+
+	daemonsets, err := clientSet.AppsV1().DaemonSets("").List(ctx, listOptions)
+	for _, daemonset := range daemonsets.Items {
+		versionLabel := daemonset.ObjectMeta.Labels["app.kubernetes.io/version"]
+		semverVersion, err := parseversion.ToSemver(versionLabel)
+		if err != nil {
+			log.Warnf("Skipping invalid version: %v", versionLabel)
+		} else {
+			result = append(result, &data.AppVersionInfo{
+				CurrentVersion:  semverVersion,
+				NewReleasesName: daemonset.ObjectMeta.Annotations["maintenance/releasename"],
+				ResourceName:    daemonset.ObjectMeta.Name,
+			})
+		}
+	}
+	if err != nil {
+		log.Panicf("Unable to get daemonsets to scan: %v", err.Error())
+	}
+
+	log.Infof("Found %v apps to scan.", len(result))
+	return result
 }
