@@ -6,5 +6,5 @@ metadata:
 
 rules:
   - apiGroups: [""]
-    resources: ["services", "nodes"]
+    resources: ["deployments", "nodes", "statefulsets", "daemonsets"]
     verbs: ["list", "get"]
