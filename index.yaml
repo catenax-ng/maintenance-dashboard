@@ -3,6 +3,16 @@ entries:
   maintenance-dashboard:
   - apiVersion: v2
     appVersion: 1.2.0
+    created: "2023-04-03T08:31:56.215902819Z"
+    description: A Helm chart for the Maintenance Dashboard
+    digest: 502ad885ca963eac69a972263ff134b10bf0226990b0fb9a3380a2481a56fb39
+    name: maintenance-dashboard
+    type: application
+    urls:
+    - https://github.com/catenax-ng/maintenance-dashboard/releases/download/maintenance-dashboard-1.2.2/maintenance-dashboard-1.2.2.tgz
+    version: 1.2.2
+  - apiVersion: v2
+    appVersion: 1.2.0
     created: "2023-04-03T08:24:44.547991778Z"
     description: A Helm chart for the Maintenance Dashboard
     digest: dc801848159750f0f9b2e064163d779b6b8e3ab43b4da6c8ecff13df97456edb
@@ -131,4 +141,4 @@ entries:
     urls:
     - https://github.com/catenax-ng/maintenance-dashboard/releases/download/maintenance-dashboard-1.0.0/maintenance-dashboard-1.0.0.tgz
     version: 1.0.0
-generated: "2023-04-03T08:24:44.548070678Z"
+generated: "2023-04-03T08:31:56.215990725Z"
