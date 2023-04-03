@@ -5,6 +5,6 @@ metadata:
   name: {{ include "maintenance-dashboard.serviceAccountName" . }}-cluster-role
 
 rules:
-  - apiGroups: [""]
+  - apiGroups: ["extensions", "apps"]
     resources: ["deployments", "nodes", "statefulsets", "daemonsets"]
     verbs: ["list", "get"]
