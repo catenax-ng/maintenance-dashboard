@@ -31,7 +31,8 @@ func GetForApp(appVersionInfo data.AppVersionInfo) *data.AppVersionInfo {
 	for i := 1; i < 10; i++ {
 		releases, lastPage, err := client.Releases.ListByProjectName(ctx, "github", appVersionInfo.NewReleasesName, i)
 		if err != nil {
-			log.Panic(err)
+			log.Warnf("Skipping newreleases scan for app %v due to the following error: %v", appVersionInfo.ResourceName, err.Error())
+			break
 		}
 
 		for _, release := range releases {
@@ -49,7 +50,11 @@ func GetForApp(appVersionInfo data.AppVersionInfo) *data.AppVersionInfo {
 	}
 
 	sort.Sort(sort.Reverse(semver.Collection(vs)))
-	latestMajorVersion := vs[0]
+	var latestMajorVersion *semver.Version
+	if len(vs) > 0 {
+		latestMajorVersion = vs[0]
+	}
+
 	var latestMinorVersion *semver.Version
 	var latestPatchVersion *semver.Version
 

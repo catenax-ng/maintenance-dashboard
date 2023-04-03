@@ -27,9 +27,11 @@ func CreateOrUpdateMetrics(appsVersionInfo []*data.AppVersionInfo) {
 		CreateOrUpdateMetricSingle(appVersionInfo.NewReleasesName, appVersionInfo.ResourceName, "major", "current", float64(appVersionInfo.CurrentVersion.Major()))
 		CreateOrUpdateMetricSingle(appVersionInfo.NewReleasesName, appVersionInfo.ResourceName, "minor", "current", float64(appVersionInfo.CurrentVersion.Minor()))
 		CreateOrUpdateMetricSingle(appVersionInfo.NewReleasesName, appVersionInfo.ResourceName, "patch", "current", float64(appVersionInfo.CurrentVersion.Patch()))
-		CreateOrUpdateMetricSingle(appVersionInfo.NewReleasesName, appVersionInfo.ResourceName, "major", "latest", float64(appVersionInfo.LatestMajorVersion.Major()))
-		CreateOrUpdateMetricSingle(appVersionInfo.NewReleasesName, appVersionInfo.ResourceName, "minor", "latest", float64(appVersionInfo.LatestMajorVersion.Minor()))
-		CreateOrUpdateMetricSingle(appVersionInfo.NewReleasesName, appVersionInfo.ResourceName, "patch", "latest", float64(appVersionInfo.LatestMajorVersion.Patch()))
+		if appVersionInfo.LatestMajorVersion != nil {
+			CreateOrUpdateMetricSingle(appVersionInfo.NewReleasesName, appVersionInfo.ResourceName, "major", "latest", float64(appVersionInfo.LatestMajorVersion.Major()))
+			CreateOrUpdateMetricSingle(appVersionInfo.NewReleasesName, appVersionInfo.ResourceName, "minor", "latest", float64(appVersionInfo.LatestMajorVersion.Minor()))
+			CreateOrUpdateMetricSingle(appVersionInfo.NewReleasesName, appVersionInfo.ResourceName, "patch", "latest", float64(appVersionInfo.LatestMajorVersion.Patch()))
+		}
 	}
 
 	log.Infoln("Metrics created and updated.")
