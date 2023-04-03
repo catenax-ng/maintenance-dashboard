@@ -6,5 +6,8 @@ metadata:
 
 rules:
   - apiGroups: ["extensions", "apps"]
-    resources: ["deployments", "nodes", "statefulsets", "daemonsets"]
+    resources: ["deployments", "statefulsets", "daemonsets"]
+    verbs: ["list", "get"]
+  - apiGroups: [""]
+    resources: [ "nodes" ]
     verbs: ["list", "get"]
