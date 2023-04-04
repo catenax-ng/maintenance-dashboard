@@ -2,11 +2,14 @@ package currentversions
 
 import (
 	"context"
+	"errors"
+	"strings"
 
 	"github.com/catenax-ng/maintenance-dashboard/internal/data"
 	"github.com/catenax-ng/maintenance-dashboard/internal/helpers"
 	"github.com/catenax-ng/maintenance-dashboard/internal/parseversion"
 	log "github.com/sirupsen/logrus"
+	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/client-go/kubernetes"
@@ -91,59 +94,69 @@ func getAppsToScan(ctx context.Context, clientSet *kubernetes.Clientset) []*data
 	}
 
 	deployments, err := clientSet.AppsV1().Deployments("").List(ctx, listOptions)
-	for _, deployment := range deployments.Items {
-		versionLabel := deployment.ObjectMeta.Labels["app.kubernetes.io/version"]
-		semverVersion, err := parseversion.ToSemver(versionLabel)
-		if err != nil {
-			log.Warnf("Skipping invalid version: %v", versionLabel)
-		} else {
-			result = append(result, &data.AppVersionInfo{
-				CurrentVersion:  semverVersion,
-				NewReleasesName: deployment.ObjectMeta.Annotations["maintenance/releasename"],
-				ResourceName:    deployment.ObjectMeta.Name,
-			})
-		}
-	}
 	if err != nil {
 		log.Panicf("Unable to get deployments to scan: %v", err.Error())
+	} else {
+		for _, deployment := range deployments.Items {
+			appVersionInfo, err := createAppVersionInfo(deployment.ObjectMeta, deployment.Spec.Template)
+			if err != nil {
+
+			} else {
+				result = append(result, appVersionInfo)
+			}
+		}
 	}
 
 	statefulsets, err := clientSet.AppsV1().StatefulSets("").List(ctx, listOptions)
-	for _, statefulset := range statefulsets.Items {
-		versionLabel := statefulset.ObjectMeta.Labels["app.kubernetes.io/version"]
-		semverVersion, err := parseversion.ToSemver(versionLabel)
-		if err != nil {
-			log.Warnf("Skipping invalid version: %v", versionLabel)
-		} else {
-			result = append(result, &data.AppVersionInfo{
-				CurrentVersion:  semverVersion,
-				NewReleasesName: statefulset.ObjectMeta.Annotations["maintenance/releasename"],
-				ResourceName:    statefulset.ObjectMeta.Name,
-			})
-		}
-	}
 	if err != nil {
 		log.Panicf("Unable to get statefulsets to scan: %v", err.Error())
+	} else {
+		for _, statefulset := range statefulsets.Items {
+			appVersionInfo, err := createAppVersionInfo(statefulset.ObjectMeta, statefulset.Spec.Template)
+			if err != nil {
+
+			} else {
+				result = append(result, appVersionInfo)
+			}
+		}
 	}
 
 	daemonsets, err := clientSet.AppsV1().DaemonSets("").List(ctx, listOptions)
-	for _, daemonset := range daemonsets.Items {
-		versionLabel := daemonset.ObjectMeta.Labels["app.kubernetes.io/version"]
-		semverVersion, err := parseversion.ToSemver(versionLabel)
-		if err != nil {
-			log.Warnf("Skipping invalid version: %v", versionLabel)
-		} else {
-			result = append(result, &data.AppVersionInfo{
-				CurrentVersion:  semverVersion,
-				NewReleasesName: daemonset.ObjectMeta.Annotations["maintenance/releasename"],
-				ResourceName:    daemonset.ObjectMeta.Name,
-			})
-		}
-	}
 	if err != nil {
 		log.Panicf("Unable to get daemonsets to scan: %v", err.Error())
+	} else {
+		for _, daemonset := range daemonsets.Items {
+			appVersionInfo, err := createAppVersionInfo(daemonset.ObjectMeta, daemonset.Spec.Template)
+			if err != nil {
+
+			} else {
+				result = append(result, appVersionInfo)
+			}
+		}
 	}
 
 	log.Infof("Found %v apps to scan.", len(result))
 	return result
+}
+
+// Parse image tag and return a data.AppVersionInfo struct. If version can't be parsed, returns error instead.
+func createAppVersionInfo(objectMeta metav1.ObjectMeta, podTemplate v1.PodTemplateSpec) (*data.AppVersionInfo, error) {
+	versionLabel, keyExists := objectMeta.Labels["app.kubernetes.io/version"]
+
+	if !keyExists {
+		image := podTemplate.Spec.Containers[0].Image
+		versionLabel = strings.Split(image, ":")[1]
+		log.Warnf("Label app.kubernetes.io/version missing for app %v. Using the tag of the %v image instead.", objectMeta.Name, image)
+	}
+
+	semverVersion, err := parseversion.ToSemver(versionLabel)
+
+	if err == nil {
+		return &data.AppVersionInfo{
+			CurrentVersion:  semverVersion,
+			NewReleasesName: objectMeta.Annotations["maintenance/releasename"],
+			ResourceName:    objectMeta.Name,
+		}, nil
+	}
+	return &data.AppVersionInfo{}, errors.New("Unable to parse version label " + versionLabel)
 }
