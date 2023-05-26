@@ -135,6 +135,25 @@ func getAppsToScan(ctx context.Context, clientSet *kubernetes.Clientset) []*data
 		}
 	}
 
+	services, err := clientSet.CoreV1().Services("").List(ctx, listOptions)
+	if err != nil {
+		log.Panicf("Unable to get services to scan: %v", err.Error())
+	} else {
+		for _, service := range services.Items {
+			versionLabel := service.ObjectMeta.Labels["app.kubernetes.io/version"]
+			semverVersion, err := parseversion.ToSemver(versionLabel)
+			if err != nil {
+				log.Warnf("Unable to parse version label " + versionLabel)
+			} else {
+				result = append(result, &data.AppVersionInfo{
+					CurrentVersion:  semverVersion,
+					NewReleasesName: service.ObjectMeta.Annotations["maintenance/releasename"],
+					ResourceName:    service.ObjectMeta.Name,
+				})
+			}
+		}
+	}
+
 	log.Infof("Found %v apps to scan.", len(result))
 	return result
 }
