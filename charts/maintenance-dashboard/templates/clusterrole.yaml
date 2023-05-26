@@ -9,5 +9,5 @@ rules:
     resources: ["deployments", "statefulsets", "daemonsets"]
     verbs: ["list", "get"]
   - apiGroups: [""]
-    resources: [ "nodes" ]
+    resources: [ "services", "nodes" ]
     verbs: ["list", "get"]
