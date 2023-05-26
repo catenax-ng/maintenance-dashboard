@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "maintenance-dashboard.fullname" . }}
+  namespace: {{ .Release.Namespace | quote }}
   labels:
     {{- include "maintenance-dashboard.labels" . | nindent 4 }}
 spec:
@@ -35,11 +36,19 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: NEWRELEASES_API_KEY
-              value: {{ quote .Values.newReleasesApiKey }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "maintenance-dashboard.secretName" . }}
+                  key: newReleasesApiKey
             - name: IN_CLUSTER
               value: {{ quote .Values.inCluster }}
+            {{ if not .Values.inCluster }}
             - name: KUBE_CONFIG
-              value: {{ quote .Values.kubeConfig }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "maintenance-dashboard.secretName" . }}
+                  key: kubeConfig
+            {{- end }}
             - name: REFRESH_INTERVAL_SECONDS
               value: {{ quote .Values.refreshIntervalSeconds }}
             - name: CURRENT_VERSION

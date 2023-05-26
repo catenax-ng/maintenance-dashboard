@@ -61,3 +61,23 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{/*
+Return true if a secret object should be created
+*/}}
+{{- define "maintenance-dashboard.createSecret" -}}
+{{- if not .Values.existingSecret -}}
+    {{- true -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Get the password secret.
+*/}}
+{{- define "maintenance-dashboard.secretName" -}}
+{{- if .Values.existingSecret }}
+    {{- printf "%s" (tpl .Values.existingSecret $) -}}
+{{- else -}}
+    {{- printf "%s" (include "maintenance-dashboard.fullname" .) -}}
+{{- end -}}
+{{- end -}}
