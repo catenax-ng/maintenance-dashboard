@@ -3,7 +3,7 @@ kind: ServiceMonitor
 metadata:
   name: {{ include "maintenance-dashboard.fullname" . }}
   labels:
-    release: {{ .Values.cluster }}-kube-prometheus-stack
+    release: {{ include "maintenance-dashboard.kube-prometheus-stack-release" . }}
 spec:
   endpoints:
   - path: /metrics

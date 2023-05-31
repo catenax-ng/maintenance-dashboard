@@ -1,2 +1,2 @@
 newReleasesApiKey: "<path:devsecops/data/acme/machine-user#newreleases-api-key>"
-cluster: "devsecops-testing"
+kubePrometheusStackReleaseName: "devsecops-testing-kube-prometheus-stack"

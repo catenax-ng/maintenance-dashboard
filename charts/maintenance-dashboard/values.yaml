@@ -18,8 +18,10 @@ kubeConfig: ""
 # How often the scan runs
 refreshIntervalSeconds: 3600
 
-# Name of the cluster the app is deployed to. (Necessary for prometheus to find the servicemonitor)
-cluster: ""
+# Whether to deploy ServiceMonitor resource.
+serviceMonitor: true
+# Name of the kube-prometheus-stack release. Necessary for the ServiceMonitor to work.
+kubePrometheusStackReleaseName: ""
 
 replicaCount: 1
 

@@ -81,3 +81,14 @@ Get the password secret.
     {{- printf "%s" (include "maintenance-dashboard.fullname" .) -}}
 {{- end -}}
 {{- end -}}
+
+{{/*
+Get kube-prometheus-stack release name for the ServiceMonitor.
+*/}}
+{{- define "maintenance-dashboard.kube-prometheus-stack-release" -}}
+{{- if .Values.kubePrometheusStackReleaseName }}
+    {{- printf "%s" (tpl .Values.kubePrometheusStackReleaseName $) -}}
+{{- else -}}
+    {{- printf "%s-%s" (include "maintenance-dashboard.fullname" .) "kube-prometheus-stack" | trunc 63 | trimSuffix "-" }}
+{{- end -}}
+{{- end -}}
