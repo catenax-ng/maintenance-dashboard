@@ -89,6 +89,6 @@ Get kube-prometheus-stack release name for the ServiceMonitor.
 {{- if .Values.kubePrometheusStackReleaseName }}
     {{- printf "%s" (tpl .Values.kubePrometheusStackReleaseName $) -}}
 {{- else -}}
-    {{- printf "%s-%s" (include "maintenance-dashboard.fullname" .) "kube-prometheus-stack" | trunc 63 | trimSuffix "-" }}
+    {{- printf "%s-%s" .Release.Name "kube-prometheus-stack" | trunc 63 | trimSuffix "-" }}
 {{- end -}}
 {{- end -}}
