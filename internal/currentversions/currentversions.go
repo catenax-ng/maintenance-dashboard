@@ -18,9 +18,9 @@ import (
 )
 
 // Returns the versions of nodes and labeled services
-func GetCurrentVersions(ctx context.Context) []*data.AppVersionInfo {
+func GetCurrentVersions(ctx context.Context) map[string]*data.AppVersionInfo {
 	clientSet := newClientSet()
-	var result []*data.AppVersionInfo
+	result := make(map[string]*data.AppVersionInfo)
 
 	log.Infoln("Getting version info about nodes.")
 	nodes, err := clientSet.CoreV1().Nodes().List(ctx, metav1.ListOptions{})
@@ -34,17 +34,20 @@ func GetCurrentVersions(ctx context.Context) []*data.AppVersionInfo {
 		if err != nil {
 			log.Warnf("Skipping invalid version: %v", node.Status.NodeInfo.KubeletVersion)
 		} else {
-			result = append(result, &data.AppVersionInfo{
+			appVersionInfo := &data.AppVersionInfo{
 				CurrentVersion:  semverVersion,
 				NewReleasesName: "kubernetes/kubernetes",
 				ResourceName:    node.Name,
-			})
+			}
+			result[node.Name] = appVersionInfo
 		}
 	}
 
 	log.Infoln("Getting version info about services.")
 	apps := getAppsToScan(ctx, clientSet)
-	result = append(result, apps...)
+	for k, v := range apps {
+		result[k] = v
+	}
 
 	log.Infoln("Resources in the cluster to be scanned with their current version:")
 	for _, res := range result {
@@ -85,8 +88,8 @@ func newClientSet() *kubernetes.Clientset {
 }
 
 // Get services annotated with maintenance/scan=true
-func getAppsToScan(ctx context.Context, clientSet *kubernetes.Clientset) []*data.AppVersionInfo {
-	var result []*data.AppVersionInfo
+func getAppsToScan(ctx context.Context, clientSet *kubernetes.Clientset) map[string]*data.AppVersionInfo {
+	result := make(map[string]*data.AppVersionInfo)
 
 	labelSelector := metav1.LabelSelector{MatchLabels: map[string]string{"maintenance/scan": "true"}}
 	listOptions := metav1.ListOptions{
@@ -99,10 +102,10 @@ func getAppsToScan(ctx context.Context, clientSet *kubernetes.Clientset) []*data
 	} else {
 		for _, deployment := range deployments.Items {
 			appVersionInfo, err := createAppVersionInfo(deployment.ObjectMeta, deployment.Spec.Template)
-			if err != nil {
-
-			} else {
-				result = append(result, appVersionInfo)
+			if err == nil {
+				if _, exists := result[appVersionInfo.NewReleasesName]; !exists {
+					result[appVersionInfo.NewReleasesName] = appVersionInfo
+				}
 			}
 		}
 	}
@@ -113,10 +116,10 @@ func getAppsToScan(ctx context.Context, clientSet *kubernetes.Clientset) []*data
 	} else {
 		for _, statefulset := range statefulsets.Items {
 			appVersionInfo, err := createAppVersionInfo(statefulset.ObjectMeta, statefulset.Spec.Template)
-			if err != nil {
-
-			} else {
-				result = append(result, appVersionInfo)
+			if err == nil {
+				if _, exists := result[appVersionInfo.NewReleasesName]; !exists {
+					result[appVersionInfo.NewReleasesName] = appVersionInfo
+				}
 			}
 		}
 	}
@@ -127,10 +130,10 @@ func getAppsToScan(ctx context.Context, clientSet *kubernetes.Clientset) []*data
 	} else {
 		for _, daemonset := range daemonsets.Items {
 			appVersionInfo, err := createAppVersionInfo(daemonset.ObjectMeta, daemonset.Spec.Template)
-			if err != nil {
-
-			} else {
-				result = append(result, appVersionInfo)
+			if err == nil {
+				if _, exists := result[appVersionInfo.NewReleasesName]; !exists {
+					result[appVersionInfo.NewReleasesName] = appVersionInfo
+				}
 			}
 		}
 	}
@@ -145,11 +148,14 @@ func getAppsToScan(ctx context.Context, clientSet *kubernetes.Clientset) []*data
 			if err != nil {
 				log.Warnf("Unable to parse version label " + versionLabel)
 			} else {
-				result = append(result, &data.AppVersionInfo{
+				appVersionInfo := &data.AppVersionInfo{
 					CurrentVersion:  semverVersion,
 					NewReleasesName: service.ObjectMeta.Annotations["maintenance/releasename"],
 					ResourceName:    service.ObjectMeta.Name,
-				})
+				}
+				if _, exists := result[appVersionInfo.NewReleasesName]; !exists {
+					result[appVersionInfo.NewReleasesName] = appVersionInfo
+				}
 			}
 		}
 	}

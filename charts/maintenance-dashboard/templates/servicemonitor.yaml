@@ -1,9 +1,10 @@
+{{- if .Values.serviceMonitor }}
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: {{ include "maintenance-dashboard.fullname" . }}
   labels:
-    release: {{ .Values.cluster }}-kube-prometheus-stack
+    release: {{ include "maintenance-dashboard.kube-prometheus-stack-release" . }}
 spec:
   endpoints:
   - path: /metrics
@@ -12,3 +13,4 @@ spec:
   selector:
     matchLabels:
       app: maintenance-dashboard
+{{- end }}
