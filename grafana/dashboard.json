@@ -24,25 +24,11 @@
     "editable": true,
     "fiscalYearStartMonth": 0,
     "graphTooltip": 0,
-    "id": 29,
-    "iteration": 1680611763996,
+    "id": 30,
+    "iteration": 1686042455478,
     "links": [],
     "liveNow": false,
     "panels": [
-        {
-            "collapsed": false,
-            "gridPos": {
-                "h": 1,
-                "w": 24,
-                "x": 0,
-                "y": 0
-            },
-            "id": 8,
-            "panels": [],
-            "repeat": "release_name",
-            "title": "$release_name",
-            "type": "row"
-        },
         {
             "datasource": {
                 "type": "prometheus",
@@ -72,9 +58,9 @@
             },
             "gridPos": {
                 "h": 6,
-                "w": 24,
+                "w": 6,
                 "x": 0,
-                "y": 1
+                "y": 0
             },
             "id": 2,
             "options": {
@@ -87,12 +73,11 @@
                     "values": false
                 },
                 "showThresholdLabels": false,
-                "showThresholdMarkers": true,
-                "text": {}
+                "showThresholdMarkers": true
             },
             "pluginVersion": "8.5.3",
             "repeat": "resource_name",
-            "repeatDirection": "v",
+            "repeatDirection": "h",
             "targets": [
                 {
                     "datasource": {
@@ -100,8 +85,7 @@
                         "uid": "prometheus"
                     },
                     "editorMode": "code",
-                    "expr": "maintenance_app_version_info{release_name=\"$release_name\", resource_name=\"$resource_name\"}",
-                    "hide": false,
+                    "expr": "maintenance_app_version_info{resource_name=\"$resource_name\"}",
                     "legendFormat": "{{origin}}-{{version_part}}",
                     "range": true,
                     "refId": "A"
@@ -118,43 +102,9 @@
         "list": [
             {
                 "current": {
-                    "selected": true,
-                    "text": [
-                        "All"
-                    ],
-                    "value": [
-                        "$__all"
-                    ]
-                },
-                "datasource": {
-                    "type": "prometheus",
-                    "uid": "prometheus"
-                },
-                "definition": "label_values(maintenance_app_version_info, release_name)",
-                "hide": 0,
-                "includeAll": true,
-                "multi": true,
-                "name": "release_name",
-                "options": [],
-                "query": {
-                    "query": "label_values(maintenance_app_version_info, release_name)",
-                    "refId": "StandardVariableQuery"
-                },
-                "refresh": 1,
-                "regex": "",
-                "skipUrlSync": false,
-                "sort": 0,
-                "type": "query"
-            },
-            {
-                "current": {
-                    "selected": true,
-                    "text": [
-                        "All"
-                    ],
-                    "value": [
-                        "$__all"
-                    ]
+                    "selected": false,
+                    "text": "All",
+                    "value": "$__all"
                 },
                 "datasource": {
                     "type": "prometheus",
@@ -163,7 +113,7 @@
                 "definition": "label_values(maintenance_app_version_info, resource_name)",
                 "hide": 0,
                 "includeAll": true,
-                "multi": true,
+                "multi": false,
                 "name": "resource_name",
                 "options": [],
                 "query": {
@@ -179,13 +129,13 @@
         ]
     },
     "time": {
-        "from": "now-5m",
+        "from": "now-6h",
         "to": "now"
     },
     "timepicker": {},
     "timezone": "",
     "title": "Maintenance",
-    "uid": "y4pgKmB4k",
-    "version": 5,
+    "uid": "DesgYd_Vz",
+    "version": 10,
     "weekStart": ""
 }
