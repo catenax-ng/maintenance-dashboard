@@ -1,0 +1,7 @@
+product: "maintenance-dashboard"
+leadingRepository: "https://github.com/catenax-ng/maintenance-dashboard"
+repoCategory: "support"
+repositories:
+  - name: "maintenance-dashboard"
+    usage: "Maintenance Dashboard for deployed applications"
+    url: "https://github.com/catenax-ng/maintenance-dashboard"
